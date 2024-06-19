@@ -30,7 +30,7 @@ import torchvision.datasets as datasets
 import torchvision.models as models
 
 import sys
-sys.path.append("../../")
+sys.path.append("../")
 import ddn.projections as projections
 
 torch.manual_seed(2809)
