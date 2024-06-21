@@ -14,11 +14,9 @@ class AbstractNode:
 
     def solve(self, x):
         raise NotImplementedError()
-        return None, None
 
     def gradient(self, x, y=None, ctx=None):
         raise NotImplementedError()
-        return None
 
 
 class AbstractDeclarativeNode(AbstractNode):
@@ -38,14 +36,14 @@ class AbstractDeclarativeNode(AbstractNode):
 
     def solve(self, x):
         raise NotImplementedError()
-        return None, None
 
     def gradient(self, x, y=None, ctx=None):
         if y is None:
             y, ctx = self.solve(x)
-        
+
         if not self._check_optimality_cond(x, y):
             return None
+
         # assert self.check_optimality_cond(x, y)
         return -1.0 * np.matmul(np.linalg.inv(self.fYY(x, y)),self.fXY(x, y))
 
@@ -55,16 +53,14 @@ class AbstractDeclarativeNode(AbstractNode):
     def _check_optimality_cond(self, x, y, ctx=None):
         # Initialize a flag to check if all elements meet the condition
         all_within_eps = True
-        
+
         # Iterate over each element and check the condition
         for i in range(len(self.fY(x, y))):
             if abs(self.fY(x, y)[i]) > self.eps:
                 all_within_eps = False
                 break
-        
+
         return all_within_eps
-
-
 
 
 class EqConstDeclarativeNode(AbstractDeclarativeNode):
@@ -82,7 +78,6 @@ class EqConstDeclarativeNode(AbstractDeclarativeNode):
 
     def solve(self, x):
         raise NotImplementedError()
-        return None, None
 
     def gradient(self, x, y=None, ctx=None):
 
@@ -121,7 +116,7 @@ class EqConstDeclarativeNode(AbstractDeclarativeNode):
             if self.hY(x, y)[i] != 0:
                 flag = False
                 break
-        
+
         if flag:
             return 0.0
         return self.fY(x, y)[indx[0][0]] / self.hY(x, y)[indx[0][0]]
@@ -143,7 +138,7 @@ class EqConstDeclarativeNode(AbstractDeclarativeNode):
                 if abs(self.fY(x, y)[i]) > self.eps:
                     all_within_eps = False
                     break
-            
+
             return all_within_eps
 
         # check for invalid lagrangian (gradient of constraint zero at optimal point)
@@ -156,7 +151,7 @@ class EqConstDeclarativeNode(AbstractDeclarativeNode):
         if all_within_eps:
             warnings.warn("gradient of constraint function vanishes at the optimum.")
             return True
-        
+
         all_within_eps = True
         # Iterate over each element and check the condition
         eq = self.fY(x, y) - nu * self.hY(x, y)
@@ -182,10 +177,10 @@ class IneqConstDeclarativeNode(EqConstDeclarativeNode):
             if abs(self.fY(x, y)[i]) > self.eps:
                 all_within_eps = False
                 break
-            
+
         if all_within_eps:
             return np.nan # flag that unconstrained gradient should be used
-        
+
         indx = np.nonzero(self.hY(x, y))
         if len(indx[0]) == 0:
             return 0.0 # still use constrained gradient
@@ -260,7 +255,7 @@ class MultiEqConstDeclarativeNode(AbstractDeclarativeNode):
             if abs(self.constraint(x, y)[i]) > self.eps:
                 all_within_eps = False
                 break
-        
+
         return all_within_eps
         # return (abs(self.constraint(x, y)) <= self.eps).all()
 
@@ -345,8 +340,6 @@ class GeneralConstDeclarativeNode(AbstractDeclarativeNode):
         result = np.dot(invHAT, sci.linalg.solve(np.dot(A, invHAT), np.dot(A, invHB) - C)) - invHB
         return result
 
-
-
     def _get_constraint_derivatives(self, x, y):
         h = self.eq_constraints(x, y)   # p-by-1
         if h is not None:
@@ -389,7 +382,6 @@ class GeneralConstDeclarativeNode(AbstractDeclarativeNode):
             h_hatY, h_hatX, h_hatYY, h_hatXY = None, None, None, None
             return h_hatY, h_hatX, h_hatYY, h_hatXY
 
-        return h_hatY, h_hatX, h_hatYY, h_hatXY
 
     def _get_nu_star(self, x, y, h_hatY):
         nu = sci.linalg.lstsq(h_hatY.T, self.fY(x, y))[0]

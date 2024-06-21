@@ -19,9 +19,9 @@ from sklearn.linear_model import Ridge
 
 # Load DataSet
 iris = datasets.load_diabetes()
-A = iris.data  
-b = iris.target  
- 
+A = iris.data
+b = iris.target
+
 scaler = StandardScaler()
 A_scaled = scaler.fit_transform(A)
 
@@ -70,7 +70,7 @@ for a in alphas:
             weight = np.vstack((weight, [w]))
 
         y_pred = reg.predict(A_test_splitted[i])
-        
+
         mse = mean_squared_error(b_test_splitted[i], y_pred)
         print("Mean Squared Error on test set: ", mse / K)
 
@@ -82,6 +82,3 @@ for a in alphas:
 print(alphas)
 print(a)
 print(loss)
-
-
-

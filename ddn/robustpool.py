@@ -14,7 +14,7 @@
 import torch
 
 class Quadratic():
-    
+
     def __init__(self):
         self.is_convex = True
 
@@ -172,10 +172,11 @@ class RobustGlobalPool2d(torch.nn.Module):
         self.register_buffer('alpha', torch.tensor([alpha]))
 
     def forward(self, input):
-        return RobustGlobalPool2dFn.apply(input,
-                                          self.method,
-                                          self.alpha
-                                          )
+        return RobustGlobalPool2dFn.apply(
+            input,
+            self.method,
+            self.alpha
+        )
 
     def extra_repr(self):
         return 'method={}, alpha={}'.format(
