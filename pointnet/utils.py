@@ -1,13 +1,3 @@
-# MODELNET40 CLASSIFICATION WITH DECLARATIVE ROBUST POOLING NODES
-# Dylan Campbell <dylan.campbell@anu.edu.au>
-# Stephen Gould <stephen.gould@anu.edu.au>
-#
-# Modified from PyTorch PointNet code:
-# https://github.com/yanx27/Pointnet_Pointnet2_pytorch/tree/31deedb10b85ec30178df57a6389b2f326f7c970
-# and with mean average precision code adapted from:
-# https://github.com/rbgirshick/py-faster-rcnn/blob/781a917b378dbfdedb45b6a56189a31982da1b43/lib/datasets/voc_eval.py
-
-# *_*coding:utf-8 *_*
 import os
 import numpy as np
 import torch
@@ -15,6 +5,8 @@ from torch.autograd import Variable
 from collections import defaultdict
 import datetime
 import torch.nn.functional as F
+
+
 def to_categorical(y, num_classes):
     """ 1-hot encodes a tensor """
     new_y = torch.eye(num_classes)[y.cpu().data.numpy(),]
@@ -40,7 +32,7 @@ def test(model, loader, do_map=False):
         if do_map:
             outputs = torch.empty(0)
             targets = torch.empty(0, dtype=torch.uint8)
-        for j, data in enumerate(loader, 0):
+        for _, data in enumerate(loader, 0):
             points, target = data
             target = target[:, 0]
             points = points.transpose(2, 1)
@@ -57,6 +49,7 @@ def test(model, loader, do_map=False):
         if do_map:
             map, aps = mean_average_precision(outputs, targets)
             return np.mean(mean_correct), map, aps
+
     return np.mean(mean_correct)
 
 def mean_average_precision(output, target):
@@ -65,10 +58,11 @@ def mean_average_precision(output, target):
     """
     with torch.no_grad():
         num_samples = output.size()[0]
-        num_classes = output.size()[1]
+
         # Convert to numpy
         output = output.numpy()
         target = target.numpy()
+
         # Sort by confidence
         sorted_ind = np.argsort(-output, axis=0)
         aps = []

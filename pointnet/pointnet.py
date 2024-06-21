@@ -7,7 +7,11 @@ import numpy as np
 import torch.nn.functional as F
 
 import sys
-sys.path.append("../../")
+# print current directory
+import os
+print(os.getcwd())
+sys.path.append("../")
+print(sys.path)
 import ddn.robustpool as robustpool
 
 class STN3d(nn.Module):
@@ -184,7 +188,7 @@ class PointNetCls(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, x):
-        x, trans, trans_feat = self.feat(x)
+        x, _, trans_feat = self.feat(x)
         x = F.relu(self.bn1(self.fc1(x)))
         x = F.relu(self.bn2(self.dropout(self.fc2(x))))
         x = self.fc3(x)
@@ -208,6 +212,7 @@ class PointNetDenseCls(nn.Module):
         self.bn4 = nn.BatchNorm1d(512)
         self.bn5 = nn.BatchNorm1d(2048)
         self.fstn = STNkd(k=128)
+
         # classification network
         self.fc1 = nn.Linear(2048, 256)
         self.fc2 = nn.Linear(256, 256)
@@ -215,6 +220,7 @@ class PointNetDenseCls(nn.Module):
         self.dropout = nn.Dropout(p=0.3)
         self.bnc1 = nn.BatchNorm1d(256)
         self.bnc2 = nn.BatchNorm1d(256)
+
         # segmentation network
         self.convs1 = torch.nn.Conv1d(4944, 256, 1)
         self.convs2 = torch.nn.Conv1d(256, 256, 1)
@@ -224,8 +230,8 @@ class PointNetDenseCls(nn.Module):
         self.bns2 = nn.BatchNorm1d(256)
         self.bns3 = nn.BatchNorm1d(128)
 
-    def forward(self, point_cloud,label):
-        batchsize,_ , n_pts = point_cloud.size()
+    def forward(self, point_cloud, label):
+        batchsize, _ , n_pts = point_cloud.size()
         # point_cloud_transformed
         trans = self.stn(point_cloud)
         point_cloud = point_cloud.transpose(2, 1)
@@ -273,7 +279,7 @@ def feature_transform_regularizer(trans):
     return loss
 
 class PointNetLoss(torch.nn.Module):
-    def __init__(self, weight=1,mat_diff_loss_scale=0.001):
+    def __init__(self, weight=1, mat_diff_loss_scale=0.001):
         super(PointNetLoss, self).__init__()
         self.mat_diff_loss_scale = mat_diff_loss_scale
         self.weight = weight
@@ -288,10 +294,10 @@ class PointNetLoss(torch.nn.Module):
 
 
 class PointNetSeg(nn.Module):
-    def __init__(self,num_class,feature_transform=False, semseg = False):
+    def __init__(self,num_class, feature_transform=False, semseg=False):
         super(PointNetSeg, self).__init__()
         self.k = num_class
-        self.feat = PointNetEncoder(global_feat=False,feature_transform=feature_transform, semseg = semseg)
+        self.feat = PointNetEncoder(global_feat=False, feature_transform=feature_transform, semseg=semseg)
         self.conv1 = torch.nn.Conv1d(1088, 512, 1)
         self.conv2 = torch.nn.Conv1d(512, 256, 1)
         self.conv3 = torch.nn.Conv1d(256, 128, 1)
@@ -304,7 +310,7 @@ class PointNetSeg(nn.Module):
     def forward(self, x):
         batchsize = x.size()[0]
         n_pts = x.size()[2]
-        x, trans, trans_feat = self.feat(x)
+        x, _, trans_feat = self.feat(x)
         x = F.relu(self.bn1(self.conv1(x)))
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
