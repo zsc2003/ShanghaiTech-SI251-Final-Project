@@ -35,7 +35,7 @@ class STN3d(nn.Module):
         x = F.relu(self.bn1(self.conv1(x)))
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
-        
+
         # Adjust pooling layer
         alpha_tensor = torch.tensor([self.alpha], dtype=x.dtype, device=x.device, requires_grad=False)
         if self.robust_type == 'Q':

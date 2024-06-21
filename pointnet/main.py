@@ -47,7 +47,7 @@ def main():
     if not os.path.exists(os.path.join(DATA_DIR, modelnet_dir)):
         www = 'https://shapenet.cs.stanford.edu/media/' + modelnet_dir + '.zip'
         zipfile = os.path.basename(www)
-        os.system('wget %s; unzip %s' % (www, zipfile))
+        os.system('wget %s --no-check-certificate; unzip %s' % (www, zipfile))
         os.system('mv %s %s' % (zipfile[:-4], DATA_DIR))
         os.system('rm %s' % (zipfile))
 
