@@ -7,11 +7,7 @@ import numpy as np
 import torch.nn.functional as F
 
 import sys
-# print current directory
-import os
-print(os.getcwd())
 sys.path.append("../")
-print(sys.path)
 import ddn.robustpool as robustpool
 
 class STN3d(nn.Module):

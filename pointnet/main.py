@@ -16,6 +16,19 @@ from pointnet import PointNetCls, feature_transform_regularizer
 
 np.random.seed(2809)
 
+def data_preparation(modelnet_dir):
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    sys.path.append(BASE_DIR)
+    DATA_DIR = os.path.join(BASE_DIR, 'data')
+    if not os.path.exists(DATA_DIR):
+        os.mkdir(DATA_DIR)
+    if not os.path.exists(os.path.join(DATA_DIR, modelnet_dir)):
+        www = 'https://shapenet.cs.stanford.edu/media/' + modelnet_dir + '.zip'
+        zipfile = os.path.basename(www)
+        os.system('wget %s --no-check-certificate; unzip %s' % (www, zipfile))
+        os.system('mv %s %s' % (zipfile[:-4], DATA_DIR))
+        os.system('rm %s' % (zipfile))
+
 def parse_args():
     '''PARAMETERS'''
     parser = argparse.ArgumentParser('PointNet')
@@ -39,40 +52,25 @@ def parse_args():
 def main():
     # Download dataset for point cloud classification
     modelnet_dir = 'modelnet40_ply_hdf5_2048'
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    sys.path.append(BASE_DIR)
-    DATA_DIR = os.path.join(BASE_DIR, 'data')
-    if not os.path.exists(DATA_DIR):
-        os.mkdir(DATA_DIR)
-    if not os.path.exists(os.path.join(DATA_DIR, modelnet_dir)):
-        www = 'https://shapenet.cs.stanford.edu/media/' + modelnet_dir + '.zip'
-        zipfile = os.path.basename(www)
-        os.system('wget %s --no-check-certificate; unzip %s' % (www, zipfile))
-        os.system('mv %s %s' % (zipfile[:-4], DATA_DIR))
-        os.system('rm %s' % (zipfile))
-
+    data_preparation(modelnet_dir)
     datapath = './data/' + modelnet_dir + '/'
 
     args = parse_args()
 
     if args.robust_type == 'Q':
         type_string = 'quadratic'
-        outlier_string = 'outliers_' + str(args.outlier_fraction)
     elif args.robust_type == 'PH':
         type_string = 'pseudohuber'
-        outlier_string = 'outliers_' + str(args.outlier_fraction)
     elif args.robust_type == 'H':
         type_string = 'huber'
-        outlier_string = 'outliers_' + str(args.outlier_fraction)
     elif args.robust_type == 'W':
         type_string = 'welsch'
-        outlier_string = 'outliers_' + str(args.outlier_fraction)
     elif args.robust_type == 'TQ':
         type_string = 'truncatedquadratic'
-        outlier_string = 'outliers_' + str(args.outlier_fraction)
     else:
         type_string = 'max'
-        outlier_string = 'outliers_' + str(args.outlier_fraction)
+
+    outlier_string = 'outliers_' + str(args.outlier_fraction)
 
     if args.rotation is not None:
         ROTATION = (int(args.rotation[0:2]),int(args.rotation[3:5]))
