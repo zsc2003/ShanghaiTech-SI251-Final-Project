@@ -15,8 +15,7 @@ import torch
 
 class Quadratic():
 
-    def __init__(self):
-        self.is_convex = True
+    is_convex = True
 
     @staticmethod
     def phi(z, alpha = 1.0):
@@ -28,8 +27,7 @@ class Quadratic():
 
 class PseudoHuber():
 
-    def __init__(self):
-        self.is_convex = True
+    is_convex = True
 
     @staticmethod
     def phi(z, alpha = 1.0):
@@ -43,8 +41,7 @@ class PseudoHuber():
 
 class Huber():
 
-    def __init__(self):
-        self.is_convex = True
+    is_convex = True
 
     @staticmethod
     def phi(z, alpha = 1.0):
@@ -59,8 +56,7 @@ class Huber():
 
 class Welsch():
 
-    def __init__(self):
-        self.is_convex = True
+    is_convex = True
 
     @staticmethod
     def phi(z, alpha = 1.0):
@@ -77,8 +73,7 @@ class Welsch():
 
 class TruncatedQuadratic():
 
-    def __init__(self):
-        self.is_convex = True
+    is_convex = True
 
     @staticmethod
     def phi(z, alpha = 1.0):
