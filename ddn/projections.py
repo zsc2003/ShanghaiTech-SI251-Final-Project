@@ -4,7 +4,6 @@ import torch.nn.functional as F
 class Simplex():
     @staticmethod
     def project(v, z = 1.0):
-        # assert z > 0.0, "z must be strictly positive (%f <= 0)" % z
         # 1. Sort v into mu (decreasing)
         mu, _ = v.sort(dim = -1, descending = True)
         # 2. Find rho (number of strictly positive elements of optimal solution w)

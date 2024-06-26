@@ -416,7 +416,6 @@ class GeneralConstDeclarativeNode(AbstractDeclarativeNode):
         return False
 
     def _check_optimality_cond(self, x, y, ctx=None):
-        """Checks that the problem's first-order optimality condition is satisfied."""
 
         h_hatY = self._get_constraint_derivatives(x, y)[0]
         if h_hatY is None:

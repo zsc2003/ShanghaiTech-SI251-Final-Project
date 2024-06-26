@@ -1,16 +1,3 @@
-#
-# Robust pooling
-#
-# y(x) = argmin_u f(x, u)
-#
-# where f(x, u) = sum_{i=1}^n phi(u - x_i; alpha)
-# with penalty function phi in
-# {quadratic, pseudo-huber, huber, welsch, truncated quadratic}
-#
-# Dylan Campbell <dylan.campbell@anu.edu.au>
-# Stephen Gould <stephen.gould@anu.edu.au>
-#
-
 import torch
 
 class Quadratic():
@@ -167,14 +154,8 @@ class RobustGlobalPool2d(torch.nn.Module):
         self.register_buffer('alpha', torch.tensor([alpha]))
 
     def forward(self, input):
-        return RobustGlobalPool2dFn.apply(
-            input,
-            self.method,
-            self.alpha
-        )
+        return RobustGlobalPool2dFn.apply(input,self.method,self.alpha)
 
     def extra_repr(self):
-        return 'method={}, alpha={}'.format(
-            self.method, self.alpha
-        )
+        return 'method={}, alpha={}'.format(self.method, self.alpha)
 
